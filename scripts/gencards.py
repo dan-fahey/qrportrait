@@ -24,43 +24,49 @@ import random
 import time
 
 from reportlab.pdfgen.canvas import Canvas
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import A4, portrait
+from reportlab.lib.units import mm
 
 ####
 ## User Parameters
 ###
 
 # Turns card grid on or off
-PRINTGRID = True
+PRINTGRID = False
 
 # Font sizes for the card text
-URLSIZE = 14
-SERIALSIZE = 26
+SERIALSIZE = 16
+URLSIZE = 16
+L2SIZE = 16
+
 
 # The width, height, and safe area of each card
-CARDWIDTH = 3.625 * inch
-CARDHEIGHT = 2.125 * inch
-CARDSAFEWIDTH = 3.25 * inch
-CARDSAFEHEIGHT = 1.75 * inch
+CARDWIDTH = 99.1 * mm
+CARDHEIGHT = 38.1 * mm
+CARDSAFEWIDTH = 89 * mm
+CARDSAFEHEIGHT = 32 * mm
 
 # Offsets from bottom left corner of card to bottom left corner of element
-URLOFFSET = (0.1 * inch, 1.5 * inch)
-SERIALOFFSET = (0.1 * inch, 1.0 * inch)
+SERIALOFFSET = (32 * mm, 23 * mm)
+URLOFFSET = (32 * mm, 13 * mm)
+L2OFFSET = (32 * mm, 3 * mm)
 
-QROFFSET = (1.5 * inch, 0.10 * inch)
+
+QROFFSET = (0 * mm, 0 * mm)
 
 # Size of the QR codes on each page
-QRSIZE = 1.2 * inch
+QRSIZE = 30 * mm
 
 # Size of the page
-PAGESIZE = landscape(letter)
+PAGESIZE = portrait(A4)
 
 # URL to print on each card
-URL = "www.testsite.com/phototest"
+URL = "Client:"
+L2 = "Ref:"
 
 # Set of characters from which to generate serial numbers
-SERIALCHARS = "123456789QRXTV"
+# Using zbase32
+SERIALCHARS = "ybndrfg8ejkmcpqxot1uwisza345h769"
 
 # Length of each serial number
 SERIALLEN = 5
@@ -89,7 +95,7 @@ def card(x, y):
 ####
 
 if(len(sys.argv) != 3):
-    print "Usage: gencards.py <number of cards> <output file>"
+    print ("Usage: gencards.py <number of cards> <output file>")
     sys.exit(1)
 
 numcards = int(sys.argv[1])
@@ -137,13 +143,18 @@ for page in range(0, numpages):
             py = coords[1] + URLOFFSET[1]
             pdf.drawString(px, py, URL)
 
+            pdf.setFont("Helvetica", L2SIZE)
+            px = coords[0] + L2OFFSET[0]
+            py = coords[1] + L2OFFSET[1]
+            pdf.drawString(px, py, L2)
+
             pdf.setFont("Helvetica", SERIALSIZE)
             px = coords[0] + SERIALOFFSET[0]
             py = coords[1] + SERIALOFFSET[1]
             pdf.drawString(px, py, serial)
 
             # Generating and writing the QR code
-            os.system("qrencode -o .tempqr.png -s 30 -m 0 -l H " + serial)
+            os.system("qrcode -o .tempqr.png -s 30 -m 0 -l H " + serial)
             
             px = coords[0] + QROFFSET[0];
             py = coords[1] + QROFFSET[1]
