@@ -109,7 +109,7 @@ for (path, ufraw) in files:
         shutil.copyfile(path, ".temp.jpg")
 
     # First resize to something ZBar can handle
-    os.system("convert .temp.jpg -resize 500x500^ .temp_small.jpg")
+    os.system("magick .temp.jpg -resize 500x500^ .temp_small.jpg")
 
     # Now scan the JPEG file for QR codes
     try:
@@ -149,4 +149,4 @@ for (path, ufraw) in files:
     os.remove(".temp_small.jpg")
 
     imgcount += 1
-    print "Finished image %d of %d" % (imgcount, len(files))
+    print ("Finished image %d of %d" % (imgcount, len(files)))
